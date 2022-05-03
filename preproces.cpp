@@ -22,9 +22,11 @@ vector<int> oth_pos; // vector of positions of other letters in seq_L2
 vector<int> oth_len; // vector of lengths of other letters in seq_L2
 string seq_L3 = "";  // all sequences concatenated with other letters removed from seq_L2
 
+string final=""; // final sequence
+
 int main()
 {
-
+    //reading FASTA file
     for (string line; getline(cin, line);)
     {
         if (line[0] == '>')
@@ -37,8 +39,9 @@ int main()
             seq_len.push_back(line.length());
         }
     }
-    int interval; // interval lowercase letters
-    int last = -1;
+    //preprocesing
+    int interval; // interval 
+    int last = -1; //flag for last position
     for (int i = 0; i < seq_L.length(); i++)
     {
         if (seq_L[i] >= 'a' && seq_L[i] <= 'z' && last == -1)
@@ -113,5 +116,23 @@ int main()
     cout << id << endl;
     cout << "Sequence length: " << seq_L3.length() << endl;
     cout << "Sequemce: " << seq_L3 << endl;
+
+    //encoding
+    for(int i=0; i<seq_L3.length();i++){
+        if(seq_L3[i]=='A'){
+            final+="0";
+        }
+        else if(seq_L3[i]=='C'){
+            final+="1";
+        }
+        else if(seq_L3[i]=='G'){
+            final+="2";
+        }
+        else if(seq_L3[i]=='T'){
+            final+="3";
+        }
+    }
+
+    cout << "Encoded sequence: " << final << endl;
     return 0;
 }
