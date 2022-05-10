@@ -7,7 +7,7 @@
 using namespace std;
 
 //target sequence
-string id_t;           // identifier from target FASTA file
+string id_tg;           // identifier from target FASTA file
 vector<int> t_seq_len; // vector of sequence lengths for each line
 string t_seq_L = "";   // all sequences concatenated
 
@@ -43,7 +43,7 @@ void target_preprocess(string file_name){
         {
             if (line[0] == '>')
             {
-                id_t = line;
+                id_tg = line;
             }
             else
             {
