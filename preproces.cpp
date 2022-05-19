@@ -218,9 +218,9 @@ void refrence_preprocess(string file_name){
 of a reference sequence.  */
 void initHT(){
 	// Initialize entries
-    for (int i = 0; i < max_hash_size; i++){
-        point[i] = -1;
-    }
+	for (int i = 0; i < max_hash_size; i++){
+        	point[i] = -1;
+    	}
 
 	uint64_t value = 0;
 	
@@ -243,7 +243,6 @@ void initHT(){
 		loc[i - k + 1] =  point[hash]; // Tuple index has to be adjusted by k - 1
 		point[hash] = i - k + 1; 
 	}	
-
 }
 
 string greedyMatching(){
