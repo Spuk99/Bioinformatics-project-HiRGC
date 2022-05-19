@@ -339,21 +339,21 @@ string greedyMatching(){
 
 int main()
 {
-    //target file preprocessing
-    target_preprocess("test2tar.txt");
-    cout << "Encoded target sequence: " << t_final << endl;
+	//target file preprocessing
+	target_preprocess("test2tar.txt");
+	cout << "Encoded target sequence: " << t_final << endl;
 
-    //reference file preprocessing
-    refrence_preprocess("test2ref.txt");
-    cout << "Encoded reference seque: " << r_final << endl;
+	//reference file preprocessing
+	refrence_preprocess("test2ref.txt");
+	cout << "Encoded reference seque: " << r_final << endl;
 	
 	initHT();
 	
-    string test = greedyMatching();
+	string test = greedyMatching();
 	
 	ofstream output_file;
 	output_file.open("test.txt");
-    output_file << test;
-    output_file.close();
-    return 0;
+	output_file << test;
+	output_file.close();
+	return 0;
 }
