@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <fstream>
+
 
 using namespace std;
 
@@ -35,7 +37,7 @@ string r_final=""; // final sequence
 
 const int k = 20; // This is said to be the best value for k in the article
 const int max_hash_size = 1 << 20; // Maximum length of the hash table
-const int max_char_num = 1 << 28; // Maximum length of a chromosome
+const int max_char_num = 1 << 29; // Maximum length of a chromosome
 
 int *point = new int[max_hash_size]; // An array of entries 
 int *loc = new int[max_char_num]; // An array of header pointers
@@ -230,12 +232,12 @@ void initHT(){
 		// cout << "Value (2): " << value << endl; debugging
 	}
 	
-	uint64_t remain = ((uint64_t) 1 << (2 * k)) - 1; // Used as a mask for which bits will remain (only those below 2 * k)
 	for (int i = k - 1; i < r_final.length(); i++){
 		value = value << 2;
 		// cout << "Value (1): " << value << endl; debugging
 		value = value + r_final[i];
 		// cout << "Value (2): " << value << endl; debugging
+		uint64_t remain = ((uint64_t) 1 << (2 * k)) - 1; // Used as a mask for which bits will remain (only those below 2 * k)
 		value = value & remain; // Only bits before 2 * k remain
 		int hash = value % max_hash_size; // By formula in the article [V mod s(size of hash table)]
 		loc[i - k + 1] =  point[hash]; // Tuple index has to be adjusted by k - 1
@@ -244,19 +246,115 @@ void initHT(){
 
 }
 
+string greedyMatching(){
+	// Indexes for target tuple and mismatched subsequence
+	int i = 0; 
+	int p = 0; 
+	string output;
+	
+	while(i < (t_final.length() - k + 1)){
+		
+		// The code up until the // line is doing the exact same thing as the initHT() function
+		// but its doing it for the target sequence
+		uint64_t value = 0; 
+		for (int x = 0; x < k; x++){
+			value = value << 2; 
+			value = value + t_final[i + x]; 
+		}
+		
+		int hash = value % max_hash_size;
+		/////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		int j = point[hash]; // Find the reference tuple with same hash as target tuple
+		int pmax = -1; // Longest match in sequences
+		int lmax = 0; // Length of longest match
+		
+		// Loop through all tuples in a hash map bucket
+		while(j != -1){
+			int l = 0; // Length of sequence
+			
+			// Check for matches
+			// These are the conditions under which a match can be considered, they are pulled out for clarity
+			// This isn't the "right" way to code, but it makes it clearer to see whats happening
+			
+			bool cond_1 = (j + l) < t_final.length() ; // Check if index is in bounds
+			bool cond_2 = (j + l) < r_final.length(); // Check if index is in bounds
+			bool cond_3 = r_final[j + l] == t_final[i + l]; // Actual char match checking
+			
+			// Loop and match
+			while(cond_1 && cond_2 && cond_3){
+				l++;  // Increase match length
+				
+				// Refresh conditions
+				cond_1 = (j + l) < t_final.length() ;
+				cond_2 = (j + l) < r_final.length(); 
+				cond_3 = r_final[j + l] == t_final[i + l];
+			}
+			
+			// Check for length of match and if its longer than last longest match, replace it
+			if (l >= k && l > lmax){
+				pmax = j;
+				lmax = l;
+			}
+			
+			// Next iteration (next tuple index)
+			j = loc[j];
+			
+		}
+		
+		if (lmax > 0){
+			int p_ = p;
+			while (p_ <= i - 1){
+				output += t_final[p_];
+				
+				p_++;
+				if(p_ > (i - 1)){
+					output += "\n";
+				}
+			}
+			
+			// This is the matched information
+			output += to_string(pmax); // Match index
+			output += ","; // Delimiter
+			output += to_string(lmax); // Length of match
+			output += "\n"; // Delimiter (\n since it will be stored in a file)
+			
+			p = i + lmax; // Update p
+		}
+		
+		// Next iteration (sequence)
+		i = i + lmax + 1;
+		
+	}
+	
+	// The remaining subsequence is a mismatched subsequence
+	while (p < t_final.length()){
+		output += t_final[p];
+		p++;
+	}
+	
+	return output;
+}
+
+
 
 int main()
 {
     //target file preprocessing
-    target_preprocess("testtar.txt");
+    target_preprocess("test2tar.txt");
     cout << "Encoded target sequence: " << t_final << endl;
 
     //reference file preprocessing
-    refrence_preprocess("testref.txt");
-    cout << "Encoded reference sequence: " << r_final << endl;
+    refrence_preprocess("test2ref.txt");
+    cout << "Encoded reference seque: " << r_final << endl;
 	
 	initHT();
-    
-    
+	
+    string test = greedyMatching();
+	
+	ofstream output_file;
+	output_file.open("test.txt");
+    output_file << test;
+    output_file.close();
     return 0;
 }
