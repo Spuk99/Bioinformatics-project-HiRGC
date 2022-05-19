@@ -213,6 +213,33 @@ void refrence_preprocess(string file_name){
     }
 }
 
+//function for writing auxillary information to file
+void saveDataToFile(){
+
+    cout<<"auxilary_info"<<endl;
+    //create txt file for writing auxillary information
+    ofstream myfile("auxillary_info.txt");
+    //write length of lower case letters to file
+    for(int i=0; i<t_low_pos.size();i++){
+        myfile << t_low_pos[i] << "-"<<t_low_len[i] << " ";
+    }
+    myfile << endl;
+
+    //write length of N letters to file and position
+    for(int i=0; i<t_N_pos.size();i++){
+        myfile << t_N_pos[i] << "-"<<t_N_len[i] << " ";
+    }
+    myfile << endl;
+
+    //write length of other letters to file and value
+    for(int i=0; i<t_oth_pos.size();i++){
+        myfile << t_oth_pos[i] << "-"<<t_oth_len[i] << " ";
+    }
+    myfile << endl;
+
+    myfile.close();
+}
+
 
 /* This function constructs a hash table from the tuple values
 of a reference sequence.  */
@@ -335,8 +362,6 @@ string greedyMatching(){
 	return output;
 }
 
-
-
 int main()
 {
 	//target file preprocessing
@@ -347,6 +372,7 @@ int main()
 	refrence_preprocess("test2ref.txt");
 	cout << "Encoded reference seque: " << r_final << endl;
 	
+    saveDataToFile();
 	initHT();
 	
 	string test = greedyMatching();
@@ -355,5 +381,6 @@ int main()
 	output_file.open("test.txt");
 	output_file << test;
 	output_file.close();
+
 	return 0;
 }
