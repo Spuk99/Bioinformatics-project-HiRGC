@@ -4,6 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <fstream>
+#include <cstring>
 
 
 using namespace std;
@@ -41,7 +42,7 @@ const int max_hash_size = 1 << 20; // Maximum length of the hash table
 const int max_char_num = 1 << 29; // Maximum length of a chromosome
 
 int *point = new int[max_hash_size]; // An array of entries 
-//int *loc = new int[max_char_num]; // An array of header pointers
+int *loc = new int[max_char_num]; // An array of header pointers
 
 void target_preprocess(string file_name){
     //reading target FASTA file
@@ -253,7 +254,6 @@ void saveDataToFile(){
 
 /* This function constructs a hash table from the tuple values
 of a reference sequence.  */
-/*
 void initHT(){
 	// Initialize entries
 	for (int i = 0; i < max_hash_size; i++){
@@ -372,19 +372,54 @@ string greedyMatching(){
 	
 	return output;
 }
-*/
-int main()
+
+void user_interface(){
+    cout<< "HiRGC v1.0" << endl;
+    cout<< "Use: ./hirgc -r <reference> -t <target>"<< endl;
+    cout<< "-r is the reference FASTA file -- required input" << endl;
+    cout<< "-t is the target FASTA file -- required input" << endl;
+    cout<< "Examples:\n";
+    cout<< "hirgc -r testref.fa -t testtar.fa\n";
+
+}
+
+int main(int argc, char *argv[])
 {
+    char *ref_file = NULL, *tar_file = NULL;
+    if(argc != 5){
+        cout<< "Wrong number of arguments" << endl;
+        user_interface();
+        return 0;
+    }
+    else{
+        if(strcmp(argv[1], "-r") == 0){
+            ref_file = argv[2];
+        }
+        else{
+            cout << "Input must contain -r in front of reference FASTA file." << argv[1] << endl;
+            user_interface();
+            return 0;
+        }
+        if(strcmp(argv[3], "-t") == 0){
+            tar_file = argv[4];
+        }
+        else{
+            cout << "Input must contain -t in front of target FASTA file. Your input was: "<<argv[3] << endl;
+            user_interface();
+            return 0;
+        }
+    }
+
 	//target file preprocessing
-	target_preprocess("test2tar.txt");
+	target_preprocess(tar_file);
 	cout << "Encoded target sequence: " << t_final << endl;
 
 	//reference file preprocessing
-	refrence_preprocess("test2ref.txt");
+	refrence_preprocess(ref_file);
 	cout << "Encoded reference seque: " << r_final << endl;
 	
     saveDataToFile();
-    /*
+    
 	initHT();
 	
 	string test = greedyMatching();
@@ -393,6 +428,6 @@ int main()
 	output_file.open("test.txt");
 	output_file << test;
 	output_file.close();
-    */
+    
 	return 0;
 }
