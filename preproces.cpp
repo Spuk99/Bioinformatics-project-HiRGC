@@ -22,6 +22,7 @@ vector<int> t_N_len;  // vector of lengths of N letters in t_seq_L1
 string t_seq_L2 = ""; // all sequences concatenated with N letters removed from t_seq_L1
 
 vector<int> t_oth_pos; // vector of positions of other letters in t_seq_L2
+vector<char> t_oth_ch; // vector of characters of other letters in t_seq_L2
 vector<int> t_oth_len; // vector of lengths of other letters in t_seq_L2
 string t_seq_L3 = "";  // all sequences concatenated with other letters removed from t_seq_L2
 
@@ -40,7 +41,7 @@ const int max_hash_size = 1 << 20; // Maximum length of the hash table
 const int max_char_num = 1 << 29; // Maximum length of a chromosome
 
 int *point = new int[max_hash_size]; // An array of entries 
-int *loc = new int[max_char_num]; // An array of header pointers
+//int *loc = new int[max_char_num]; // An array of header pointers
 
 void target_preprocess(string file_name){
     //reading target FASTA file
@@ -119,10 +120,13 @@ void target_preprocess(string file_name){
     last = -1;
     for (int i = 0; i < t_seq_L2.length(); i++)
     {
-        if (!(t_seq_L2[i] == 'A' || t_seq_L2[i] == 'C' || t_seq_L2[i] == 'G' || t_seq_L2[i] == 'T') && last == -1)
+        if (last == -1 &&!(t_seq_L2[i] == 'A' || t_seq_L2[i] == 'C' || t_seq_L2[i] == 'G' || t_seq_L2[i] == 'T') )
         {
             last = i;
             t_oth_pos.push_back(last);
+            t_oth_ch.push_back(t_seq_L2[i]);
+        }else if(last != -1 && !(t_seq_L2[i] == 'A' || t_seq_L2[i] == 'C' || t_seq_L2[i] == 'G' || t_seq_L2[i] == 'T')){
+            t_oth_ch.push_back(t_seq_L2[i]);
         }
         else if (last != -1 && (t_seq_L2[i] == 'A' || t_seq_L2[i] == 'C' || t_seq_L2[i] == 'G' || t_seq_L2[i] == 'T'))
         {
@@ -216,7 +220,6 @@ void refrence_preprocess(string file_name){
 //function for writing auxillary information to file
 void saveDataToFile(){
 
-    cout<<"auxilary_info"<<endl;
     //create txt file for writing auxillary information
     ofstream myfile("auxillary_info.txt");
     //write length of lower case letters to file
@@ -230,10 +233,17 @@ void saveDataToFile(){
         myfile << t_N_pos[i] << "-"<<t_N_len[i] << " ";
     }
     myfile << endl;
-
-    //write length of other letters to file and value
+    int j=0;
+    int k=0;
+    //write length of other letters to file and values
     for(int i=0; i<t_oth_pos.size();i++){
-        myfile << t_oth_pos[i] << "-"<<t_oth_len[i] << " ";
+        myfile << t_oth_pos[i] << "-";
+        for(; j<t_oth_len[i]+k;){
+            myfile << t_oth_ch[j];
+            j++;
+        }
+        k=j;
+        myfile << " ";
     }
     myfile << endl;
 
@@ -243,6 +253,7 @@ void saveDataToFile(){
 
 /* This function constructs a hash table from the tuple values
 of a reference sequence.  */
+/*
 void initHT(){
 	// Initialize entries
 	for (int i = 0; i < max_hash_size; i++){
@@ -361,7 +372,7 @@ string greedyMatching(){
 	
 	return output;
 }
-
+*/
 int main()
 {
 	//target file preprocessing
@@ -373,6 +384,7 @@ int main()
 	cout << "Encoded reference seque: " << r_final << endl;
 	
     saveDataToFile();
+    /*
 	initHT();
 	
 	string test = greedyMatching();
@@ -381,6 +393,6 @@ int main()
 	output_file.open("test.txt");
 	output_file << test;
 	output_file.close();
-
+    */
 	return 0;
 }
