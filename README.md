@@ -30,8 +30,8 @@ g++ -o de_hirgc de_hirgc.cpp
 # Run
 
 ```
-hirgc -r reference.fa -t target.fa
-de_hirgc -r reference.fa -t target.7z
+./hirgc -r reference.fa -t target.fa
+./de_hirgc -r reference.fa -t target.7z
 ```
 
 
