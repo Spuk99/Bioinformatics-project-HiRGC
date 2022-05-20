@@ -6,7 +6,6 @@
 #include <cstring>
 #include <sys/time.h>
 
-
 using namespace std;
 
 //target sequence
@@ -227,9 +226,6 @@ void refrence_preprocess(string file_name){
 // Written by Katarina Misura
 void saveDataToFile(ofstream &myfile){
 
-    //create txt file for writing auxillary information
-    
-    
     //write line length for each line from the original file
     for(int i=0; i<t_seq_len.size();i++){
         myfile<<t_seq_len[i]<<" ";
@@ -260,7 +256,6 @@ void saveDataToFile(ofstream &myfile){
     }
     myfile << endl;
 
-    
 }
 
 
@@ -430,35 +425,35 @@ void user_interface(){
 int main(int argc, char *argv[])
 {	
 	// Written by Katarina Misura
-    char *ref_file = NULL, *tar_file = NULL;
-    if(argc != 5){
-        cout<< "Wrong number of arguments" << endl;
-        user_interface();
-        return 0;
-    }
-    else{
-        if(strcmp(argv[1], "-r") == 0){
-            ref_file = argv[2];
-        }
-        else{
-            cout << "Input must contain -r in front of reference FASTA file." << argv[1] << endl;
-            user_interface();
-            return 0;
-        }
-        if(strcmp(argv[3], "-t") == 0){
-            tar_file = argv[4];
-        }
-        else{
-            cout << "Input must contain -t in front of target FASTA file. Your input was: "<<argv[3] << endl;
-            user_interface();
-            return 0;
-        }
-    }
+    	char *ref_file = NULL, *tar_file = NULL;
+    	if(argc != 5){
+        	cout<< "Wrong number of arguments" << endl;
+        	user_interface();
+        	return 0;
+    	}
+    	else{
+        	if(strcmp(argv[1], "-r") == 0){
+            		ref_file = argv[2];
+        	}	
+        	else{
+            		cout << "Input must contain -r in front of reference FASTA file." << argv[1] << endl;
+            		user_interface();
+            		return 0;
+        	}
+		
+        	if(strcmp(argv[3], "-t") == 0){
+            		tar_file = argv[4];
+        	}
+        	else{
+            		cout << "Input must contain -t in front of target FASTA file. Your input was: "<<argv[3] << endl;
+            		user_interface();
+            		return 0;
+        	}	
+    	}
 
 	target_preprocess(tar_file);
 	refrence_preprocess(ref_file);
 
-	
 	// Written by Marko Marfat
 	struct  timeval  start;
 	struct  timeval  end;
