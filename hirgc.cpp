@@ -6,6 +6,7 @@
 #include <cstring>
 #include <sys/time.h>
 
+
 using namespace std;
 
 //target sequence
@@ -226,11 +227,6 @@ void refrence_preprocess(string file_name){
 // Written by Katarina Misura
 void saveDataToFile(ofstream &myfile){
 
-    //write line length for each line from the original file
-    for(int i=0; i<t_seq_len.size();i++){
-        myfile<<t_seq_len[i]<<" ";
-    }
-    myfile<<endl;
     //write length of lower case letters to file and their positions
     for(int i=0; i<t_low_pos.size();i++){
         myfile << t_low_pos[i] << "-"<<t_low_len[i] << " ";
@@ -256,6 +252,7 @@ void saveDataToFile(ofstream &myfile){
     }
     myfile << endl;
 
+    
 }
 
 
@@ -298,22 +295,26 @@ void initHT(){
 string RLE(){
 	
 	string output;
-	for(int i = 0; i < t_seq_len.size(); i++){
-		int count = 1;
-		for(int j = 0; j < t_seq_len[i]; j++){
-			if(t_final[j] == t_final[j+1]){
-				count++;			
-			} else {
-				output += t_final[j];
-				output += "-";
-				output += to_string(count);
-				output += " ";
-				count = 1;
-			}
+	int count = 1;
+	output += to_string(t_seq_len[0]);
+	int val_before = t_seq_len[0];
+	for(int i = 1; i < t_seq_len.size(); i++){
+		if (t_seq_len[i] == val_before){
+			count++;
 		}
-		output += "\n";
+		else{
+			output += "-";
+			output += to_string(count);
+			output += " ";
+			output += to_string(t_seq_len[i]);
+			val_before = t_seq_len[i];
+			count = 1;
+		}
 	}
-    
+	output += "-";
+	output += to_string(count);
+	output += "\n";
+
 	return output;
 }
 
@@ -421,39 +422,37 @@ void user_interface(){
 }
 
 
-
 int main(int argc, char *argv[])
 {	
 	// Written by Katarina Misura
-    	char *ref_file = NULL, *tar_file = NULL;
-    	if(argc != 5){
-        	cout<< "Wrong number of arguments" << endl;
-        	user_interface();
-        	return 0;
-    	}
-    	else{
-        	if(strcmp(argv[1], "-r") == 0){
-            		ref_file = argv[2];
-        	}	
-        	else{
-            		cout << "Input must contain -r in front of reference FASTA file." << argv[1] << endl;
-            		user_interface();
-            		return 0;
-        	}
-		
-        	if(strcmp(argv[3], "-t") == 0){
-            		tar_file = argv[4];
-        	}
-        	else{
-            		cout << "Input must contain -t in front of target FASTA file. Your input was: "<<argv[3] << endl;
-            		user_interface();
-            		return 0;
-        	}	
-    	}
+    char *ref_file = NULL, *tar_file = NULL;
+    if(argc != 5){
+        cout<< "Wrong number of arguments" << endl;
+        user_interface();
+        return 0;
+    }
+    else{
+        if(strcmp(argv[1], "-r") == 0){
+            ref_file = argv[2];
+        }
+        else{
+            cout << "Input must contain -r in front of reference FASTA file." << argv[1] << endl;
+            user_interface();
+            return 0;
+        }
+        if(strcmp(argv[3], "-t") == 0){
+            tar_file = argv[4];
+        }
+        else{
+            cout << "Input must contain -t in front of target FASTA file. Your input was: "<<argv[3] << endl;
+            user_interface();
+            return 0;
+        }
+    }
 
 	target_preprocess(tar_file);
 	refrence_preprocess(ref_file);
-
+		
 	// Written by Marko Marfat
 	struct  timeval  start;
 	struct  timeval  end;
