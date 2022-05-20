@@ -223,6 +223,9 @@ void saveDataToFile(){
 
     //create txt file for writing auxillary information
     ofstream myfile("auxillary_info.txt");
+    
+    //mozda bi trebalo dodati i ispis duzina linija iz početnog fajla?!?!!?!?
+
     //write length of lower case letters to file
     for(int i=0; i<t_low_pos.size();i++){
         myfile << t_low_pos[i] << "-"<<t_low_len[i] << " ";
