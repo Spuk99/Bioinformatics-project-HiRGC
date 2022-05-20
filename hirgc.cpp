@@ -6,7 +6,6 @@
 #include <cstring>
 #include <sys/time.h>
 
-
 using namespace std;
 
 //target sequence
@@ -425,30 +424,30 @@ void user_interface(){
 int main(int argc, char *argv[])
 {	
 	// Written by Katarina Misura
-    char *ref_file = NULL, *tar_file = NULL;
-    if(argc != 5){
-        cout<< "Wrong number of arguments" << endl;
-        user_interface();
-        return 0;
-    }
-    else{
-        if(strcmp(argv[1], "-r") == 0){
-            ref_file = argv[2];
-        }
-        else{
-            cout << "Input must contain -r in front of reference FASTA file." << argv[1] << endl;
-            user_interface();
-            return 0;
-        }
-        if(strcmp(argv[3], "-t") == 0){
-            tar_file = argv[4];
-        }
-        else{
-            cout << "Input must contain -t in front of target FASTA file. Your input was: "<<argv[3] << endl;
-            user_interface();
-            return 0;
-        }
-    }
+    	char *ref_file = NULL, *tar_file = NULL;
+    	if(argc != 5){
+        	cout<< "Wrong number of arguments" << endl;
+        	user_interface();
+        	return 0;
+    	}
+    	else{
+        	if(strcmp(argv[1], "-r") == 0){
+            		ref_file = argv[2];
+        	}
+        	else{
+            		cout << "Input must contain -r in front of reference FASTA file." << argv[1] << endl;
+            		user_interface();
+            		return 0;
+        	}
+        	if(strcmp(argv[3], "-t") == 0){
+            		tar_file = argv[4];
+        	}
+        	else{
+            		cout << "Input must contain -t in front of target FASTA file. Your input was: "<<argv[3] << endl;
+            		user_interface();
+            		return 0;
+        	}
+    	}
 
 	target_preprocess(tar_file);
 	refrence_preprocess(ref_file);
@@ -468,7 +467,7 @@ int main(int argc, char *argv[])
 	
 
 	myfile << id_tg << endl; // Save identifier to file
-	myfile << rle;  		 // Save RLE encoded input to file
+	myfile << rle;  	 // Save RLE encoded input to file
 	saveDataToFile(myfile);  // Save auxilliary data to file
 	myfile << gm;            // Save result of greedy matching to file
 	myfile.close();
