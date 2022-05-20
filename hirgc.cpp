@@ -3,8 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <fstream>
 #include <cstring>
+#include <sys/time.h>
 
 
 using namespace std;
@@ -44,6 +44,9 @@ const int max_char_num = 1 << 29; // Maximum length of a chromosome
 int *point = new int[max_hash_size]; // An array of entries 
 int *loc = new int[max_char_num]; // An array of header pointers
 
+
+
+// Written by Katarina Misura
 void target_preprocess(string file_name){
     //reading target FASTA file
     string line;
@@ -164,6 +167,7 @@ void target_preprocess(string file_name){
 
 }
 
+// Written by Katarina Misura
 void refrence_preprocess(string file_name){
     //reading reference FASTA file
     string line;
@@ -218,11 +222,13 @@ void refrence_preprocess(string file_name){
     }
 }
 
+
 //function for writing auxillary information to file
-void saveDataToFile(){
+// Written by Katarina Misura
+void saveDataToFile(ofstream &myfile){
 
     //create txt file for writing auxillary information
-    ofstream myfile("auxillary_info.txt");
+    
     
     //write line length for each line from the original file
     for(int i=0; i<t_seq_len.size();i++){
@@ -254,12 +260,13 @@ void saveDataToFile(){
     }
     myfile << endl;
 
-    myfile.close();
+    
 }
 
 
-/* This function constructs a hash table from the tuple values
-of a reference sequence.  */
+// This function constructs a hash table from the tuple values
+// of a reference sequence. 
+// Written by Marko Marfat
 void initHT(){
 	// Initialize entries
 	for (int i = 0; i < max_hash_size; i++){
@@ -289,6 +296,34 @@ void initHT(){
 	}	
 }
 
+// Run Length encoding
+// Turns a sequence like: 0 0 0 0 0 1 2 2 1 1 1 into a format 0-5 1-1 2-2 1-3
+// Very useful for when theres a lot of repeating in a sequence
+// Written by Marko Marfat
+string RLE(){
+	
+	string output;
+	for(int i = 0; i < t_seq_len.size(); i++){
+		int count = 1;
+		for(int j = 0; j < t_seq_len[i]; j++){
+			if(t_final[j] == t_final[j+1]){
+				count++;			
+			} else {
+				output += t_final[j];
+				output += "-";
+				output += to_string(count);
+				output += " ";
+				count = 1;
+			}
+		}
+		output += "\n";
+	}
+    
+	return output;
+}
+
+
+// Written by Marko Marfat
 string greedyMatching(){
 	// Indexes for target tuple and mismatched subsequence
 	int i = 0; 
@@ -379,6 +414,8 @@ string greedyMatching(){
 	return output;
 }
 
+
+// Written by Katarina Misura
 void user_interface(){
     cout<< "HiRGC v1.0" << endl;
     cout<< "Use: ./hirgc -r <reference> -t <target>"<< endl;
@@ -386,11 +423,13 @@ void user_interface(){
     cout<< "-t is the target FASTA file -- required input" << endl;
     cout<< "Examples:\n";
     cout<< "hirgc -r testref.fa -t testtar.fa\n";
-
 }
 
+
+
 int main(int argc, char *argv[])
-{
+{	
+	// Written by Katarina Misura
     char *ref_file = NULL, *tar_file = NULL;
     if(argc != 5){
         cout<< "Wrong number of arguments" << endl;
@@ -416,24 +455,39 @@ int main(int argc, char *argv[])
         }
     }
 
-	//target file preprocessing
 	target_preprocess(tar_file);
-	cout << "Encoded target sequence: " << t_final << endl;
-
-	//reference file preprocessing
 	refrence_preprocess(ref_file);
-	cout << "Encoded reference seque: " << r_final << endl;
+
 	
-    saveDataToFile();
-    
-	initHT();
+	// Written by Marko Marfat
+	struct  timeval  start;
+	struct  timeval  end;
+	unsigned long timer;
+	gettimeofday(&start,NULL);
 	
-	string test = greedyMatching();
+	ofstream myfile;
+	myfile.open("output.txt");
+
+	initHT(); // Initialize the Hash Table
+	string rle = RLE(); // Conduct run length encoding
+	string gm = greedyMatching(); // Conduct greedy matching
 	
-	ofstream output_file;
-	output_file.open("test.txt");
-	output_file << test;
-	output_file.close();
+
+	myfile << id_tg << endl; // Save identifier to file
+	myfile << rle;  		 // Save RLE encoded input to file
+	saveDataToFile(myfile);  // Save auxilliary data to file
+	myfile << gm;            // Save result of greedy matching to file
+	myfile.close();
+	
+	// Compress output file using PPMd method from 7za library
+	system("7za a -m0=PPMd compressed.7z output.txt");
+
+	// Delete the output file (it's now saved in a compressed form)
+	system("rm output.txt");
+
+	gettimeofday(&end, NULL);
+	timer = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
+	printf("total compression timer = %lf ms; %lf min\n", timer/1000.0, timer/1000.0/1000.0/60.0);
     
 	return 0;
 }
