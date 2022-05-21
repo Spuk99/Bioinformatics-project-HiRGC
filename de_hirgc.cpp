@@ -18,6 +18,7 @@ string r_final=""; // final reference sequence
 
 //Target sequence
 string id_tg; // identifier from target FASTA file
+int tar_size; //size of target sequence
 string t_rle =""; // RLE of target sequence
 vector<string> t_rle_seq; // vector of RLE sequences
 vector<int> t_rle_len; // vector of sequence lengths for each line
@@ -161,6 +162,8 @@ void read_target_comp(string file_name){
         getline(myfile, line);
         id_tg = line; // identifier from target FASTA file
         getline(myfile, line);
+        tar_size = stoi(line); // size of target sequence
+        getline(myfile, line);
         t_rle = line; // RLE of target sequence
         getline(myfile, line);
         t_low = line; // lower case auxiliary information
@@ -214,7 +217,7 @@ void read_target_comp(string file_name){
 //write target sequence to file in FASTA format
 void write_target_seq(ofstream &myfile){
     cout<<"begin"<<endl;
-    for(int i=0; i<max_len; i++){
+    for(int i=0; i<tar_size; i++){
             t_final += '-';
     }
     cout<<"-- gotovi"<<endl;
@@ -283,7 +286,7 @@ void write_target_seq(ofstream &myfile){
     //write target sequence to file
 
     cout<<"lowcase gotovi"<<endl;
-    myfile << ">" << id_tg << endl;
+    myfile << id_tg << endl;
     myfile << t_final << endl;
 
 }

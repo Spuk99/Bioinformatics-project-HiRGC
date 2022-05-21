@@ -19,7 +19,6 @@ string t_seq_L1 = "";  // all sequences concatenated with lowercase letters conv
 
 vector<int> t_N_pos;  // vector of positions of N letters in t_seq_L1
 vector<int> t_N_len;  // vector of lengths of N letters in t_seq_L1
-string t_seq_L2 = ""; // all sequences concatenated with N letters removed from t_seq_L1
 
 vector<int> t_oth_pos; // vector of positions of other letters in t_seq_L1
 vector<char> t_oth_ch; // vector of characters of other letters in t_seq_L1
@@ -224,6 +223,8 @@ void refrence_preprocess(string file_name){
 //function for writing auxiliary information to file
 // Written by Katarina Misura
 void saveDataToFile(ofstream &myfile){
+    //write size of target sequence
+    myfile << t_seq_L.length() << endl;
 
     //write positions of lower case letters to file and their length
     for(int i=0; i<t_low_pos.size();i++){
