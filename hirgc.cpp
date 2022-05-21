@@ -8,34 +8,30 @@
 
 using namespace std;
 
-//target sequence
+//Target sequence
 string id_tg;           // identifier from target FASTA file
-vector<int> t_seq_len; // vector of sequence lengths for each line
-string t_seq_L = "";   // all sequences concatenated
-
-vector<int> t_low_pos; // vector of positions of lowercase letters
-vector<int> t_low_len; // vector of lengths of lowercase letters
-string t_seq_L1 = "";  // all sequences concatenated with lowercase letters converted to uppercase
-
-vector<int> t_N_pos;  // vector of positions of N letters in t_seq_L1
-vector<int> t_N_len;  // vector of lengths of N letters in t_seq_L1
-
-vector<int> t_oth_pos; // vector of positions of other letters in t_seq_L1
-vector<char> t_oth_ch; // vector of characters of other letters in t_seq_L1
-vector<int> t_oth_len; // vector of lengths of other letters in t_seq_L1
-string t_seq_L3 = "";  // all sequences concatenated with other letters removed from t_seq_L1
-
-string t_final=""; // final sequence
+vector<int> t_seq_len;  // vector of sequence lengths for each line
+string t_seq_L = "";    // all lines of sequences concatenated into one string to form one sequence
+vector<int> t_low_pos;  // vector of positions of lowercase letters in target sequence
+vector<int> t_low_len;  // vector of lengths of lowercase letters in target sequence
+string t_seq_L1 = "";   // sequence with lowercase letters converted to uppercase
+vector<int> t_N_pos;    // vector of positions of N letters in target sequence
+vector<int> t_N_len;    // vector of lengths of N letters in target sequence
+vector<int> t_oth_pos;  // vector of positions of other letters in target sequence
+vector<char> t_oth_ch;  // vector of characters of other letters in target sequence
+vector<int> t_oth_len;  // vector of lengths of other letters in target sequence
+string t_seq_L3 = "";   // sequence with other letters than A, C, G and T removed from target sequence
+string t_final="";      // final sequence encoded - A=0, C=1, G=2, T=3 
 
 // Reference sequence
-string id_r;           // identifier from reference FASTA file
-vector<int> r_seq_len; // vector of sequence lengths for each line
-string r_seq_L = "";   // all sequences concatenated
-string r_seq_L1 = "";  // all sequences concatenated with lowercase letters converted to uppercase
-string r_seq_L3 = "";  // all sequences concatenated with other letters removed from t_seq_L1
-string r_final=""; // final sequence
+string id_r;            // identifier from reference FASTA file
+vector<int> r_seq_len;  // vector of sequence lengths for each line
+string r_seq_L = "";    // all lines of sequence concatenated into one string to form one sequence
+string r_seq_L1 = "";   // sequence with lowercase letters converted to uppercase
+string r_seq_L3 = "";   // sequence with other letters than A, C, G and T removed from reference sequence
+string r_final="";      // final reference sequence encoded in the same way as the target sequence
 
-const int k = 20; // This is said to be the best value for k in the article
+const int k = 20;  // This is said to be the best value for k in the article
 const int max_hash_size = 1 << 20; // Maximum length of the hash table
 const int max_char_num = 1 << 29; // Maximum length of a chromosome
 
@@ -45,6 +41,7 @@ int *loc = new int[max_char_num]; // An array of header pointers
 
 
 // Written by Katarina Misura
+// This function reads the target sequence from the FASTA file and stores the final encoded sequence in the variable t_final
 void target_preprocess(string file_name){
     //reading target FASTA file
     string line;
@@ -60,7 +57,7 @@ void target_preprocess(string file_name){
             else
             {
                 t_seq_L += line;
-                t_seq_L+=')';
+                t_seq_L+=')'; //adding the sing for end of the line (we used the right bracket as the end of the line)
                 t_seq_len.push_back(line.length());
             }
 
@@ -70,11 +67,12 @@ void target_preprocess(string file_name){
     else
     {
         cout << "Unable to open file";
-        //add exit from program
+        throw runtime_error("Closing program!");
     }  
     //preprocesing target sequence
     int interval; // interval 
     int last = -1; //flag for last position
+    //turning lowercase letters to uppercase
     for (int i = 0; i < t_seq_L.length(); i++)
     {
         if (t_seq_L[i] >= 'a' && t_seq_L[i] <= 'z' && last == -1)
@@ -96,6 +94,7 @@ void target_preprocess(string file_name){
         t_low_len.push_back(interval);
     }
 
+    //collecting information about letters N
     last = -1;
     for (int i = 0; i < t_seq_L1.length(); i++)
     {
@@ -117,6 +116,7 @@ void target_preprocess(string file_name){
         t_N_len.push_back(interval);
     }
 
+    //collecting information about other letters than A, C, G, T and N and removing them from the sequence
     last = -1;
     for (int i = 0; i < t_seq_L1.length(); i++)
     {
@@ -145,7 +145,7 @@ void target_preprocess(string file_name){
         t_oth_len.push_back(interval);
     }
 
-    //encoding
+    //encoding target sequence
     for(int i=0; i<t_seq_L3.length();i++){
         if(t_seq_L3[i]=='A'){
             t_final+="0";
@@ -164,6 +164,7 @@ void target_preprocess(string file_name){
 }
 
 // Written by Katarina Misura
+// This function reads the reference sequence from the FASTA file and stores the final encoded sequence in the variable r_final
 void refrence_preprocess(string file_name){
     //reading reference FASTA file
     string line;
@@ -187,14 +188,15 @@ void refrence_preprocess(string file_name){
     else
     {
         cout << "Unable to open file";
-        //add exit from program
+        throw runtime_error("Closing program!");
     }
     //preprocesing reference sequence
+    //turning lowercase letters to uppercase
     for (int i = 0; i < r_seq_L.length(); i++)
     {
         r_seq_L1 += toupper(r_seq_L[i]);
     }
-
+    //removing all letters than A, C, G, T from reference sequence
     for (int i = 0; i < r_seq_L1.length(); i++)
     {
         if ((r_seq_L1[i] == 'A' || r_seq_L1[i] == 'C' || r_seq_L1[i] == 'G' || r_seq_L1[i] == 'T'))
@@ -202,7 +204,7 @@ void refrence_preprocess(string file_name){
             r_seq_L3 += r_seq_L1[i];
         }
     }
-    //encoding
+    //encoding reference sequence
     for(int i=0; i<r_seq_L3.length();i++){
         if(r_seq_L3[i]=='A'){
             r_final+="0";
@@ -219,27 +221,26 @@ void refrence_preprocess(string file_name){
     }
 }
 
-
-//function for writing auxiliary information to file
 // Written by Katarina Misura
+//function for writing auxiliary information to file
 void saveDataToFile(ofstream &myfile){
     //write size of target sequence
     myfile << t_seq_L.length() << endl;
 
-    //write positions of lower case letters to file and their length
+    //write positions and lengths of intervals of lowercase letters to file
     for(int i=0; i<t_low_pos.size();i++){
         myfile << t_low_pos[i] << "-"<<t_low_len[i] << " ";
     }
     myfile << endl;
 
-    //write length of N letters to file and position
+    //write positions and lengths of intervals of letters N to file
     for(int i=0; i<t_N_pos.size();i++){
         myfile << t_N_pos[i] << "-"<<t_N_len[i] << " ";
     }
     myfile << endl;
     int j=0;
     int k=0;
-    //write length of other letters to file and values
+    //write lengths of intervals of other letters and the interval to file
     for(int i=0; i<t_oth_pos.size();i++){
         myfile << t_oth_pos[i] << "-";
         for(; j<t_oth_len[i]+k;){
@@ -253,31 +254,28 @@ void saveDataToFile(ofstream &myfile){
 }
 
 
+
+// Written by Marko Marfat
 // This function constructs a hash table from the tuple values
 // of a reference sequence. 
-// Written by Marko Marfat
 void initHT(){
 	// Initialize entries
 	for (int i = 0; i < max_hash_size; i++){
         	point[i] = -1;
-    	}
+    }
 
 	uint64_t value = 0;
 	
 	// Only k values is needed, skip rest
 	for (int i = 0; i < k - 1; i++){
 		value = value << 2; // Not 100% sure about this one, I think it shifts the value so new char can be added (not really explained in the article)
-		// cout << "Value (1): " << value << endl; debugging
 		value = value + r_final[i]; // Add char to tuple
-		// cout << "Value (2): " << value << endl; debugging
 	}
-	
+    
+    uint64_t remain = ((uint64_t) 1 << (2 * k)) - 1; // Used as a mask for which bits will remain (only those below 2 * k)
 	for (int i = k - 1; i < r_final.length(); i++){
 		value = value << 2;
-		// cout << "Value (1): " << value << endl; debugging
 		value = value + r_final[i];
-		// cout << "Value (2): " << value << endl; debugging
-		uint64_t remain = ((uint64_t) 1 << (2 * k)) - 1; // Used as a mask for which bits will remain (only those below 2 * k)
 		value = value & remain; // Only bits before 2 * k remain
 		int hash = value % max_hash_size; // By formula in the article [V mod s(size of hash table)]
 		loc[i - k + 1] =  point[hash]; // Tuple index has to be adjusted by k - 1
@@ -285,12 +283,11 @@ void initHT(){
 	}	
 }
 
+// Written by Marko Marfat
 // Run Length encoding
 // Turns a sequence like: 0 0 0 0 0 1 2 2 1 1 1 into a format 0-5 1-1 2-2 1-3
 // Very useful for when theres a lot of repeating in a sequence
-// Written by Marko Marfat
 string RLE(){
-	
 	string output;
 	int count = 1;
 	output += to_string(t_seq_len[0]);
@@ -317,6 +314,7 @@ string RLE(){
 
 
 // Written by Marko Marfat
+// This function finds the best match for a given interval of the target sequence
 string greedyMatching(){
 	// Indexes for target tuple and mismatched subsequence
 	int i = 0; 
@@ -370,7 +368,6 @@ string greedyMatching(){
 			
 			// Next iteration (next tuple index)
 			j = loc[j];
-			
 		}
 		
 		if (lmax > 0){
@@ -395,7 +392,6 @@ string greedyMatching(){
 		
 		// Next iteration (sequence)
 		i = i + lmax + 1;
-		
 	}
 	
 	// The remaining subsequence is a mismatched subsequence
@@ -409,6 +405,7 @@ string greedyMatching(){
 
 
 // Written by Katarina Misura
+//This function prints out instructions for the user
 void user_interface(){
     cout<< "HiRGC v1.0" << endl;
     cout<< "Use: ./hirgc -r <reference> -t <target>"<< endl;
@@ -417,7 +414,6 @@ void user_interface(){
     cout<< "Examples:\n";
     cout<< "hirgc -r testref.fa -t testtar.fa\n";
 }
-
 
 int main(int argc, char *argv[])
 {	
@@ -457,13 +453,12 @@ int main(int argc, char *argv[])
 	gettimeofday(&start,NULL);
 	
 	ofstream myfile;
-	myfile.open("output.txt");
+	myfile.open("output.fa");
 
 	initHT(); // Initialize the Hash Table
 	string rle = RLE(); // Conduct run length encoding
 	string gm = greedyMatching(); // Conduct greedy matching
 	
-
 	myfile << id_tg << endl; // Save identifier to file
 	myfile << rle;  	 // Save RLE encoded input to file
 	saveDataToFile(myfile);  // Save auxilliary data to file
@@ -471,10 +466,10 @@ int main(int argc, char *argv[])
 	myfile.close();
 	
 	// Compress output file using PPMd method from 7za library
-	system("7za a -m0=PPMd compressed.7z output.txt");
+	system("7za a -m0=PPMd compressed.7z output.fa");
 
 	// Delete the output file (it's now saved in a compressed form)
-	system("rm output.txt");
+	system("rm output.fa");
 
 	gettimeofday(&end, NULL);
 	timer = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
