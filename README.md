@@ -5,3 +5,33 @@ This is a project from the 'Bioinformatics 1' course at the Faculty of Electrica
 Course information can be found [here](https://www.fer.unizg.hr/en/course/bio1).
 
 Goal of this project is to implement the high-speed and high-ratio referential genome compression algorithm. Original article can be found [here](https://doi.org/10.1093/bioinformatics/btx412) and the original repository can be found [here](https://github.com/yuansliu/HiRGC).
+
+# Authors
+
+- [Katarina Mišura](https://github.com/Spuk99)
+- [Marko Marfat](https://github.com/mmarfat)
+
+# Necessary prerequisites 
+
+- [MinGW](https://www.mingw-w64.org/downloads/)
+- [7zip](https://www.7-zip.org/)
+
+<pre>
+<b>NOTE:</b> This code is meant to be run on a Linux operating system.
+</pre>
+
+# Compile
+
+```
+g++ -o hirgc hirgc.cpp
+g++ -o de_hirgc de_hirgc.cpp
+```
+
+# Run
+
+```
+./hirgc -r reference.fa -t target.fa
+./de_hirgc -r reference.fa -t target.7z
+```
+
+
