@@ -21,10 +21,10 @@ vector<int> t_N_pos;  // vector of positions of N letters in t_seq_L1
 vector<int> t_N_len;  // vector of lengths of N letters in t_seq_L1
 string t_seq_L2 = ""; // all sequences concatenated with N letters removed from t_seq_L1
 
-vector<int> t_oth_pos; // vector of positions of other letters in t_seq_L2
-vector<char> t_oth_ch; // vector of characters of other letters in t_seq_L2
-vector<int> t_oth_len; // vector of lengths of other letters in t_seq_L2
-string t_seq_L3 = "";  // all sequences concatenated with other letters removed from t_seq_L2
+vector<int> t_oth_pos; // vector of positions of other letters in t_seq_L1
+vector<char> t_oth_ch; // vector of characters of other letters in t_seq_L1
+vector<int> t_oth_len; // vector of lengths of other letters in t_seq_L1
+string t_seq_L3 = "";  // all sequences concatenated with other letters removed from t_seq_L1
 
 string t_final=""; // final sequence
 
@@ -33,7 +33,7 @@ string id_r;           // identifier from reference FASTA file
 vector<int> r_seq_len; // vector of sequence lengths for each line
 string r_seq_L = "";   // all sequences concatenated
 string r_seq_L1 = "";  // all sequences concatenated with lowercase letters converted to uppercase
-string r_seq_L3 = "";  // all sequences concatenated with other letters removed from t_seq_L2
+string r_seq_L3 = "";  // all sequences concatenated with other letters removed from t_seq_L1
 string r_final=""; // final sequence
 
 const int k = 20; // This is said to be the best value for k in the article
@@ -110,10 +110,6 @@ void target_preprocess(string file_name){
             last = -1;
             t_N_len.push_back(interval);
         }
-        if (t_seq_L1[i] != 'N')
-        {
-            t_seq_L2 += t_seq_L1[i];
-        }
     }
     if (last != -1)
     {
@@ -122,30 +118,30 @@ void target_preprocess(string file_name){
     }
 
     last = -1;
-    for (int i = 0; i < t_seq_L2.length(); i++)
+    for (int i = 0; i < t_seq_L1.length(); i++)
     {
-        if (last == -1 &&!(t_seq_L2[i] == 'A' || t_seq_L2[i] == 'C' || t_seq_L2[i] == 'G' || t_seq_L2[i] == 'T') )
+        if (last == -1 &&!(t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T'|| t_seq_L1[i] == 'N') )
         {
             last = i;
             t_oth_pos.push_back(last);
-            t_oth_ch.push_back(t_seq_L2[i]);
-        }else if(last != -1 && !(t_seq_L2[i] == 'A' || t_seq_L2[i] == 'C' || t_seq_L2[i] == 'G' || t_seq_L2[i] == 'T')){
-            t_oth_ch.push_back(t_seq_L2[i]);
+            t_oth_ch.push_back(t_seq_L1[i]);
+        }else if(last != -1 && !(t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T' || t_seq_L1[i] == 'N')){
+            t_oth_ch.push_back(t_seq_L1[i]);
         }
-        else if (last != -1 && (t_seq_L2[i] == 'A' || t_seq_L2[i] == 'C' || t_seq_L2[i] == 'G' || t_seq_L2[i] == 'T'))
+        else if (last != -1 && (t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T' || t_seq_L1[i] == 'N'))
         {
             interval = i - last;
             last = -1;
             t_oth_len.push_back(interval);
         }
-        if ((t_seq_L2[i] == 'A' || t_seq_L2[i] == 'C' || t_seq_L2[i] == 'G' || t_seq_L2[i] == 'T'))
+        if ((t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T'))
         {
-            t_seq_L3 += t_seq_L2[i];
+            t_seq_L3 += t_seq_L1[i];
         }
     }
     if (last != -1)
     {
-        interval = t_seq_L2.length() - last;
+        interval = t_seq_L1.length() - last;
         t_oth_len.push_back(interval);
     }
 

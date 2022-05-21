@@ -210,6 +210,7 @@ void read_target_comp(string file_name){
     mis_ch=decode(mis_ch);
 }
 
+// Written by Katarina Misura
 //write target sequence to file in FASTA format
 void write_target_seq(ofstream &myfile){
     cout<<"begin"<<endl;
@@ -242,17 +243,35 @@ void write_target_seq(ofstream &myfile){
             t_oth_pos[i]++;
         }
     }
+    cout<<"other gotovi"<<endl;
     //add Matches and mismatches to target sequence
-    for(int i=0; i<match_pos.size(); i++){
-        for(int j=0; j<match_len[i]; j++){
-            t_final[match_pos[i]] = r_final[match_pos[i]];
-            match_pos[i]++;
+    bool flag=true;
+    int index=0;
+    while(flag){
+        for(int i=0; i<match_pos.size(); i++){
+            for(int j=0; j<match_len[i]; j++){
+                if(t_final[index]=='-'){
+                    t_final[index] = r_final[match_pos[i]];
+                    match_pos[i]++;
+                    index++;
+                }else{
+                    index++;
+                    j--;
+                }
+            }
+            for(int j=0; j<mis_ch[i].size(); j++){
+                if(t_final[index]=='-'){
+                    t_final[index] = mis_ch[i][j];
+                    index++;
+                }else{
+                    index++;
+                    j--;
+                }
+            }
         }
-        for(int j=0; j<mis_ch[i].size(); j++){
-            t_final[match_pos[i]] = mis_ch[i][j];
-            match_pos[i]++;
-        }
+        flag=false;
     }
+
     cout<<"Match/mismatch gotovi"<<endl;
     //turn certain characters to lower case
     for(int i=0; i<t_low_pos.size(); i++){
