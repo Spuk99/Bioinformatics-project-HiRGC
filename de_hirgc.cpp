@@ -228,29 +228,18 @@ void write_target_seq(ofstream &myfile){
             t_final += '-';
     }
 
-    int idx=0;
-    //add rle sequence to target sequence
-    for(int i=0; i<t_rle_pos.size(); i++){
-        for(int j=t_rle_len[i]; j>0; j--){
-            idx += t_rle_pos[i];
-            t_final[idx] = '\n';
-            idx++;
-        }
-    }
-
-    //add N's to target sequence
-    for(int i=0; i<t_N_len.size(); i++){
-        for(int j=t_N_len[i]; j>0; j--){
-            t_final[t_N_pos[i]] = 'N';
-            t_N_pos[i]++;
-        }
-    }
-
     //add other letters to target sequence
     for(int i=0; i<t_oth_pos.size(); i++){
         for(int j=0; j<t_oth_ch[i].size(); j++){
             t_final[t_oth_pos[i]] = t_oth_ch[i][j];
             t_oth_pos[i]++;
+        }
+    }
+    //add N's to target sequence
+    for(int i=0; i<t_N_len.size(); i++){
+        for(int j=t_N_len[i]; j>0; j--){
+            t_final[t_N_pos[i]] = 'N';
+            t_N_pos[i]++;
         }
     }
 
@@ -304,6 +293,16 @@ void write_target_seq(ofstream &myfile){
                 }
             }
             flag=false;
+        }
+    }
+
+    int idx=0;
+    //add rle sequence to target sequence
+    for(int i=0; i<t_rle_pos.size(); i++){
+        for(int j=t_rle_len[i]; j>0; j--){
+            idx += t_rle_pos[i];
+            t_final[idx] = '\n';
+            idx++;
         }
     }
 
