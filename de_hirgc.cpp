@@ -367,14 +367,18 @@ int main(int argc, char *argv[]){
     refrence_get_seq(ref_file);
     
     //decompress the target file
-    string command = "7z e " + string(tar_file);
+    string command = "7za e " + string(tar_file);
     system(command.c_str());
     //get the name of the target file
     string tar_file_name = tar_file;
-    tar_file_name.erase(tar_file_name.length()-3);
+    tar_file_name.erase(tar_file_name.length()-2);
+	tar_file_name += "fa";
     
     //proces the target file
-    read_target_comp(tar_file);
+	
+    read_target_comp(tar_file_name);
+	string rmcmd = "rm " + tar_file_name;
+	system(rmcmd.c_str());
 
     //write target sequence to FASTA file
     ofstream myfile;
