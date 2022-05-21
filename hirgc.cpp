@@ -466,7 +466,7 @@ int main(int argc, char *argv[])
 	myfile.close();
 	
 	// Compress output file using PPMd method from 7za library
-	system("7za a -m0=PPMd compressed.7z output.fa");
+	system("7za a -m0=PPMd output.7z output.fa");
 
 	// Delete the output file (it's now saved in a compressed form)
 	system("rm output.fa");
