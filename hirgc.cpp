@@ -61,6 +61,7 @@ void target_preprocess(string file_name){
             else
             {
                 t_seq_L += line;
+                t_seq_L+=')';
                 t_seq_len.push_back(line.length());
             }
 
@@ -120,15 +121,15 @@ void target_preprocess(string file_name){
     last = -1;
     for (int i = 0; i < t_seq_L1.length(); i++)
     {
-        if (last == -1 &&!(t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T'|| t_seq_L1[i] == 'N') )
+        if (last == -1 &&!(t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T'|| t_seq_L1[i] == 'N'|| t_seq_L1[i] == ')') )
         {
             last = i;
             t_oth_pos.push_back(last);
             t_oth_ch.push_back(t_seq_L1[i]);
-        }else if(last != -1 && !(t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T' || t_seq_L1[i] == 'N')){
+        }else if(last != -1 && !(t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T' || t_seq_L1[i] == 'N'|| t_seq_L1[i] == ')')){
             t_oth_ch.push_back(t_seq_L1[i]);
         }
-        else if (last != -1 && (t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T' || t_seq_L1[i] == 'N'))
+        else if (last != -1 && (t_seq_L1[i] == 'A' || t_seq_L1[i] == 'C' || t_seq_L1[i] == 'G' || t_seq_L1[i] == 'T' || t_seq_L1[i] == 'N'|| t_seq_L1[i] == ')'))
         {
             interval = i - last;
             last = -1;
