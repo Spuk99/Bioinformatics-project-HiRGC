@@ -23,8 +23,8 @@ Goal of this project is to implement the high-speed and high-ratio referential g
 # Compile
 
 ```
-g++ -o hirgc hirgc.cpp
-g++ -o de_hirgc de_hirgc.cpp
+g++ hirgc.cpp -o hirgc -O3
+g++ de_hirgc.cpp -o de_hirgc -O3
 ```
 
 # Run
