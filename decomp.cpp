@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstring>
 #include <tuple>
-#include <sys/time.h>
+//#include <sys/time.h>
 
 using namespace std;
 
@@ -28,19 +28,21 @@ vector<int> t_low_pos; // vector of positions of lowercase letters
 vector<int> t_low_len; // vector of lengths of lowercase letters
 string t_N=""; // N's auxiliary information
 vector<string> t_N_seq; // vector of N sequences
-vector<int> t_N_pos;  // vector of positions of N letters in t_seq_L1
-vector<int> t_N_len;  // vector of lengths of N letters in t_seq_L1
+vector<int> t_N_pos;  // vector of positions of N letters 
+vector<int> t_N_len;  // vector of lengths of N letters 
 string t_oth=""; // other auxiliary information
 vector<string> t_oth_seq; // vector of other sequences
-vector<int> t_oth_pos; // vector of positions of other letters in t_seq_L2
-vector<string> t_oth_ch; // vector of characters of other letters in t_seq_L2
-vector<int> t_oth_len; // vector of lengths of other letters in t_seq_L2
+vector<int> t_oth_pos; // vector of positions of other letters 
+vector<string> t_oth_ch; // vector of characters of other letters 
 
 vector<int> match_pos; // vector of positions of matches
 vector<int> match_len; // vector of lengths of matches
-vector<string> miss_ch; // vector of characters of missmatches
+vector<string> mis_ch; // vector of characters of mismatches encodec
+vector<string> mis_ch_dc; // vector of characters of mismatches decoded
 
 string t_final=""; // final sequence
+
+const int max_len = 1<<28; // maximum length of sequence
 
 
 // Written by Katarina Misura
@@ -128,8 +130,29 @@ tuple<vector<int>,vector<string>> split_extract_pos_str(vector<string> input, ch
     return make_tuple(pos,str);
 }
 
+//decode mismatches from encoded string
+vector<string> decode(vector<string> input){
+    for(int i=0; i<input.size();i++){
+        for(int j=0; j<input[i].size();j++){
+            if(input[i][j]=='0'){
+                input[i][j]='A';
+            }
+            else if(input[i][j]=='1'){
+                input[i][j]='C';
+            }
+            else if(input[i][j]=='2'){
+                input[i][j]='G';
+            }
+            else if(input[i][j]=='3'){
+                input[i][j]='T';
+            }
+        }
+    }
+    return input;
+}
+
 // Written by Katarina Misura
-//read target compressed file and extract RLE, lowercase, N, other information, matches and missmatches
+//read target compressed file and extract RLE, lowercase, N, other information, matches and mismatches
 void read_target_comp(string file_name){
     string line;
     ifstream myfile(file_name);
@@ -146,7 +169,7 @@ void read_target_comp(string file_name){
         getline(myfile, line);
         t_oth = line; // other auxiliary information
 
-        //read matches and missmatches and store them in vectors
+        //read matches and mismatches and store them in vectors
         while (getline(myfile, line))
         {
             vector<string> temp = split_string(line, ',');
@@ -154,7 +177,7 @@ void read_target_comp(string file_name){
                 match_pos.push_back(stoi(temp[0]));
                 match_len.push_back(stoi(temp[1]));
             }else{
-                miss_ch.push_back(temp[0]);
+                mis_ch.push_back(temp[0]);
             }
         }
         myfile.close();
@@ -183,9 +206,68 @@ void read_target_comp(string file_name){
     tie(t_N_pos,t_N_len) = split_extract_pos_len(t_N_seq, '-');
     //split other sequence and extract position and character of other
     tie(t_oth_pos,t_oth_ch) = split_extract_pos_str(t_oth_seq, '-');
+
+    mis_ch=decode(mis_ch);
 }
 
+//write target sequence to file in FASTA format
+void write_target_seq(ofstream &myfile){
+    cout<<"begin"<<endl;
+    for(int i=0; i<max_len; i++){
+            t_final += '-';
+    }
+    cout<<"-- gotovi"<<endl;
+    int idx=0;
+    //add rle sequence to target sequence
+    for(int i=0; i<t_rle_pos.size(); i++){
+        for(int j=t_rle_len[i]; j>0; j--){
+            idx += t_rle_pos[i];
+            t_final[idx] = '\n';
+            idx++;
+        }
+    }
+    cout<<"enteri gotovi"<<endl;
+    //add N's to target sequence
+    for(int i=0; i<t_N_len.size(); i++){
+        for(int j=t_N_len[i]; j>0; j--){
+            t_final[t_N_pos[i]] = 'N';
+            t_N_pos[i]++;
+        }
+    }
+    cout<<"N gotovi"<<endl;
+    //add other letters to target sequence
+    for(int i=0; i<t_oth_pos.size(); i++){
+        for(int j=0; j<t_oth_ch[i].size(); j++){
+            t_final[t_oth_pos[i]] = t_oth_ch[i][j];
+            t_oth_pos[i]++;
+        }
+    }
+    //add Matches and mismatches to target sequence
+    for(int i=0; i<match_pos.size(); i++){
+        for(int j=0; j<match_len[i]; j++){
+            t_final[match_pos[i]] = r_final[match_pos[i]];
+            match_pos[i]++;
+        }
+        for(int j=0; j<mis_ch[i].size(); j++){
+            t_final[match_pos[i]] = mis_ch[i][j];
+            match_pos[i]++;
+        }
+    }
+    cout<<"Match/mismatch gotovi"<<endl;
+    //turn certain characters to lower case
+    for(int i=0; i<t_low_pos.size(); i++){
+        for(int j=t_low_len[i]; j>0; j--){
+            t_final[t_low_pos[i]] = tolower(t_final[t_low_pos[i]]);
+            t_low_pos[i]++;
+        }
+    }
+    //write target sequence to file
 
+    cout<<"lowcase gotovi"<<endl;
+    myfile << ">" << id_tg << endl;
+    myfile << t_final << endl;
+
+}
 
 
 // Written by Katarina Misura
@@ -224,12 +306,12 @@ int main(int argc, char *argv[]){
             return 0;
         }
     }
-    
+    /*
     struct  timeval  start;
 	struct  timeval  end;
 	unsigned long timer;
 	gettimeofday(&start,NULL);
-    
+    */
     refrence_get_seq(ref_file);
     /*
     //decompress the target file -- nez jel ovo uopce dobro???
@@ -269,16 +351,20 @@ int main(int argc, char *argv[]){
         cout << match_pos[i] << " " << match_len[i] << "   ";
     }
     cout << endl;
-    cout << "Miss match: " << endl;
-    for(int i = 0; i < miss_ch.size(); i++){
-        cout << miss_ch[i] << "   ";
+    cout << "Mismatch: " << endl;
+    for(int i = 0; i < mis_ch.size(); i++){
+        cout << mis_ch[i] << "   ";
     }
     cout << endl;
 
-    
+    ofstream myfile;
+	myfile.open("final_t.txt");
+    write_target_seq(myfile);
+
+    /*
     gettimeofday(&end, NULL);
 	timer = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
 	printf("total compression timer = %lf ms; %lf min\n", timer/1000.0, timer/1000.0/1000.0/60.0);
-    
+    */
     return 0;
 }
