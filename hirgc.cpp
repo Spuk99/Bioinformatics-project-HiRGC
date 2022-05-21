@@ -70,6 +70,7 @@ void target_preprocess(string file_name){
     else
     {
         cout << "Unable to open file";
+        //add exit from program
     }  
     //preprocesing target sequence
     int interval; // interval 
@@ -190,6 +191,7 @@ void refrence_preprocess(string file_name){
     else
     {
         cout << "Unable to open file";
+        //add exit from program
     }
     //preprocesing reference sequence
     for (int i = 0; i < r_seq_L.length(); i++)
@@ -222,11 +224,11 @@ void refrence_preprocess(string file_name){
 }
 
 
-//function for writing auxillary information to file
+//function for writing auxiliary information to file
 // Written by Katarina Misura
 void saveDataToFile(ofstream &myfile){
 
-    //write length of lower case letters to file and their positions
+    //write positions of lower case letters to file and their length
     for(int i=0; i<t_low_pos.size();i++){
         myfile << t_low_pos[i] << "-"<<t_low_len[i] << " ";
     }
@@ -249,9 +251,7 @@ void saveDataToFile(ofstream &myfile){
         k=j;
         myfile << " ";
     }
-    myfile << endl;
-
-    
+    myfile << endl;    
 }
 
 
