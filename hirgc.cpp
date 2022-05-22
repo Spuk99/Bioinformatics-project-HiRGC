@@ -56,9 +56,9 @@ void target_preprocess(string file_name){
             }
             else
             {
-				if(line[line.size() - 1] == '\r'){
-					line.erase(line.size() - 1);
-				}
+		if(line[line.size() - 1] == '\r'){
+			line.erase(line.size() - 1);
+		}
                 t_seq_L += line;
                 t_seq_L +=')'; //adding the sing for end of the line (we used the right bracket as the end of the line)
                 t_seq_len.push_back(line.length());
@@ -182,9 +182,9 @@ void refrence_preprocess(string file_name){
             }
             else
             {
-				if(line[line.size() - 1] == '\r'){
-					line.erase(line.size() - 1);
-				}
+		if(line[line.size() - 1] == '\r'){
+			line.erase(line.size() - 1);
+		}
                 r_seq_L += line;
                 r_seq_len.push_back(line.length());
             }
