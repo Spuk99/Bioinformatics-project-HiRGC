@@ -6,6 +6,8 @@ Course information can be found [here](https://www.fer.unizg.hr/en/course/bio1).
 
 Goal of this project is to implement the high-speed and high-ratio referential genome compression algorithm. Original article can be found [here](https://doi.org/10.1093/bioinformatics/btx412) and the original repository can be found [here](https://github.com/yuansliu/HiRGC).
 
+Example on how to run the program can be found below. 
+
 # Authors
 
 - [Katarina Mišura](https://github.com/Spuk99)
@@ -31,6 +33,9 @@ g++ de_hirgc.cpp -o de_hirgc -O3
 
 <pre>
 <b>NOTE:</b> Use the provided test2ref.fa as reference and test2tar.fa as target.
+
+./hirgc is used for compression
+./de_hirgc is used for decompression
 </pre>
 
 ```
