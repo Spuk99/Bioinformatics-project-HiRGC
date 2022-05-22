@@ -83,7 +83,7 @@ void target_preprocess(string file_name){
             last = i;
             t_low_pos.push_back(last);
         }
-        else if (last != -1 && !(t_seq_L[i] >= 'a' && t_seq_L[i] <= 'z'))
+        else if (last != -1 && !(t_seq_L[i] >= 'a' && t_seq_L[i] <= 'z' || t_seq_L[i]==')'))
         {
             interval = i - last;
             last = -1;
@@ -233,15 +233,22 @@ void saveDataToFile(ofstream &myfile){
     //write size of target sequence
     myfile << t_seq_L.length() << endl;
 
+    int sum=0;
     //write positions and lengths of intervals of lowercase letters to file
     for(int i=0; i<t_low_pos.size();i++){
-        myfile << t_low_pos[i] << "-"<<t_low_len[i] << " ";
+        int sub =t_low_pos[i]-sum;
+        myfile << sub << " " << t_low_len[i] << " ";
+        sum +=sub+t_low_len[i];
+        cout << i << " " << sub << " " << sum << endl; 
+
     }
     myfile << endl;
-
+    sum=0;
     //write positions and lengths of intervals of letters N to file
     for(int i=0; i<t_N_pos.size();i++){
-        myfile << t_N_pos[i] << "-"<<t_N_len[i] << " ";
+        int sub =t_N_pos[i]-sum;
+        myfile << sub << " " << t_N_len[i] << " ";
+        sum +=sub+t_N_len[i];
     }
     myfile << endl;
     int j=0;
@@ -303,7 +310,7 @@ string RLE(){
 			count++;
 		}
 		else{
-			output += "-";
+			output += " ";
 			output += to_string(count);
 			output += " ";
 			output += to_string(t_seq_len[i]);
@@ -311,7 +318,7 @@ string RLE(){
 			count = 1;
 		}
 	}
-	output += "-";
+	output += " ";
 	output += to_string(count);
 	output += "\n";
 

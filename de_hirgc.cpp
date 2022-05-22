@@ -41,6 +41,11 @@ vector<string> mis_ch;      // vector of characters of mismatches encodec - late
 string t_final="";          // final sequence
 
 int first; // first position - is it match or mismatch
+enum{
+    MATCH,
+    MISMATCH,
+};
+
 
 // Written by Katarina Misura
 // Get sequence from reference FASTA file
@@ -99,14 +104,19 @@ vector<string> split_string(string str, char delimiter){
 
 // Written by Katarina Misura
 //Splits string into two integers, one represents positions, other represents length of interval (or length of line - RLE)
-tuple<vector<int>,vector<int>> split_extract_pos_len(vector<string> input, char delimiter){
+tuple<vector<int>,vector<int>> split_extract_pos_len(string str, char delimiter){
     vector<int> pos;
     vector<int> len;
-    for (int i = 0; i < input.size(); i++)
-    {
-        vector<string> temp = split_string(input[i], delimiter);
-        pos.push_back(stoi(temp[0]));
-        len.push_back(stoi(temp[1]));
+    stringstream ss(str);
+    string tok;
+    int counter=0;
+    while(getline(ss,tok,delimiter)){
+        if(counter%2==0){
+            pos.push_back(stoi(tok));
+        }else{
+            len.push_back(stoi(tok));
+        }
+        counter++;
     }
     return make_tuple(pos,len);
 }
@@ -195,25 +205,32 @@ void read_target_comp(string file_name){
         throw runtime_error("Closing program!");
     }
 
-    //split RLE
-    t_rle_seq = split_string(t_rle, ' ');
-    //split lowercase
-    t_low_seq = split_string(t_low, ' ');
-    //split N's
-    t_N_seq = split_string(t_N, ' ');
     //split other
     t_oth_seq = split_string(t_oth, ' ');
     
     //split RLE sequence and extract position and length of RLE
-    tie(t_rle_pos,t_rle_len) = split_extract_pos_len(t_rle_seq, '-');
+    tie(t_rle_pos,t_rle_len) = split_extract_pos_len(t_rle, ' ');
     //split lowercase sequence and extract position and length of lowercase
-    tie(t_low_pos,t_low_len) = split_extract_pos_len(t_low_seq, '-');
+    tie(t_low_pos,t_low_len) = split_extract_pos_len(t_low, ' ');
     //split N's sequence and extract position and length of N's
-    tie(t_N_pos,t_N_len) = split_extract_pos_len(t_N_seq, '-');
+    tie(t_N_pos,t_N_len) = split_extract_pos_len(t_N, ' ');
     //split other sequence and extract position and characters
     tie(t_oth_pos,t_oth_ch) = split_extract_pos_str(t_oth_seq, '-');
 
     mis_ch=decode(mis_ch);
+
+    int sum=0;
+    for(int i=0; i<t_low_pos.size();i++){
+        sum=sum+t_low_pos[i];
+        t_low_pos[i]=sum;
+        sum+=t_low_len[i];
+    }
+    sum=0;
+    for(int i=0; i<t_N_pos.size();i++){
+        sum=sum+t_N_pos[i];
+        t_N_pos[i]=sum;
+        sum+=t_N_len[i];
+    }
 }
 
 // Written by Katarina Misura
