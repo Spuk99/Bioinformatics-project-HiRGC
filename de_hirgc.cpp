@@ -41,11 +41,6 @@ vector<string> mis_ch;      // vector of characters of mismatches encodec - late
 string t_final="";          // final sequence
 
 int first; // first position - is it match or mismatch
-enum{
-    MATCH,
-    MISMATCH,
-};
-
 
 // Written by Katarina Misura
 // Get sequence from reference FASTA file
@@ -181,13 +176,13 @@ void read_target_comp(string file_name){
                 match_pos.push_back(stoi(temp[0]));
                 match_len.push_back(stoi(temp[1]));
                 if(flg){
-                    first = MATCH;
+                    first = 1;
                     flg=false;
                 }
             }else{
                 mis_ch.push_back(temp[0]);
                 if(flg){
-                    first = MISMATCH;
+                    first = 2;
                     flg=false;
                 }
             }
@@ -235,6 +230,7 @@ void write_target_seq(ofstream &myfile){
             t_oth_pos[i]++;
         }
     }
+
     //add N's to target sequence
     for(int i=0; i<t_N_len.size(); i++){
         for(int j=t_N_len[i]; j>0; j--){
@@ -245,57 +241,69 @@ void write_target_seq(ofstream &myfile){
 
     //add Matches and mismatches to target sequence
     bool flag=true; //flag to check if all matches and mismatches are added
-    int index=0;
+    int index1=0;
+
     while(flag){
-        if(first==MATCH){
+        if(first==1){
             for(int i=0; i<match_pos.size(); i++){
                 for(int j=0; j<match_len[i]; j++){
-                    if(t_final[index]=='-'){
-                        t_final[index] = r_final[match_pos[i]];
+                    if(t_final[index1]=='-'){
+                        t_final[index1] = r_final[match_pos[i]];
                         match_pos[i]++;
-                        index++;
+                        index1++;
                     }else{
-                        index++;
+                        index1++;
                         j--;
                     }
                 }
-                for(int j=0; j<mis_ch[i].size(); j++){
-                    if(t_final[index]=='-'){
-                        t_final[index] = mis_ch[i][j];
-                        index++;
+                if(mis_ch.size()>0){
+                    if(mis_ch.size()==i){
+                        break;
                     }else{
-                        index++;
-                        j--;
+                        for(int j=0; j<mis_ch[i].size(); j++){
+                            if(t_final[index1]=='-'){
+                                t_final[index1] = mis_ch[i][j];
+                                index1++;
+                            }else{
+                                index1++;
+                                j--;
+                            }
+                        }
                     }
                 }
             }
             flag=false;
-        }else if(first==MISMATCH){
+        }else if(first==2){
             for(int i=0; i<mis_ch.size(); i++){
                 for(int j=0; j<mis_ch[i].size(); j++){
-                    if(t_final[index]=='-'){
-                        t_final[index] = mis_ch[i][j];
-                        index++;
+                    if(t_final[index1]=='-'){
+                        t_final[index1] = mis_ch[i][j];
+                        index1++;
                     }else{
-                        index++;
+                        index1++;
                         j--;
                     }
                 }
-                for(int j=0; j<match_len[i]; j++){
-                    if(t_final[index]=='-'){
-                        t_final[index] = r_final[match_pos[i]];
-                        match_pos[i]++;
-                        index++;
+                if(match_pos.size()>0){
+                    if(match_pos.size()==i){
+                        break;
                     }else{
-                        index++;
-                        j--;
+                        for(int j=0; j<match_len[i]; j++){
+                            if(t_final[index1]=='-'){
+                                t_final[index1] = r_final[match_pos[i]];
+                                match_pos[i]++;
+                                index1++;
+                            }else{
+                                index1++;
+                                j--;
+                            }
+                        }
                     }
                 }
             }
             flag=false;
         }
     }
-
     int idx=0;
     //add rle sequence to target sequence
     for(int i=0; i<t_rle_pos.size(); i++){
@@ -305,7 +313,6 @@ void write_target_seq(ofstream &myfile){
             idx++;
         }
     }
-
     //turn certain characters to lowercase
     for(int i=0; i<t_low_pos.size(); i++){
         for(int j=t_low_len[i]; j>0; j--){
@@ -313,10 +320,10 @@ void write_target_seq(ofstream &myfile){
             t_low_pos[i]++;
         }
     }
-
     //write target sequence to file
+
     myfile << id_tg << endl;
-    myfile << t_final << endl;
+    myfile << t_final << endl;;
 }
 
 
