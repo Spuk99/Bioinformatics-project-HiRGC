@@ -182,6 +182,9 @@ void refrence_preprocess(string file_name){
             }
             else
             {
+				if(line[line.size() - 1] == '\r'){
+					line.erase(line.size() - 1);
+				}
                 r_seq_L += line;
                 r_seq_len.push_back(line.length());
             }
