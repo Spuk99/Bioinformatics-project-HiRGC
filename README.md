@@ -33,6 +33,11 @@ g++ de_hirgc.cpp -o de_hirgc -O3
 
 # Run
 
+```
+./hirgc -r reference.fa -t target.fa
+./de_hirgc -r reference.fa -t target.7z
+```
+
 <pre>
 <b>NOTE:</b> Use the provided test2ref.fa as reference and test2tar.fa as target.
 
@@ -40,9 +45,6 @@ g++ de_hirgc.cpp -o de_hirgc -O3
 ./de_hirgc is used for decompression
 </pre>
 
-```
-./hirgc -r reference.fa -t target.fa
-./de_hirgc -r reference.fa -t target.7z
-```
+
 
 
