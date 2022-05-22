@@ -56,8 +56,11 @@ void target_preprocess(string file_name){
             }
             else
             {
+				if(line[line.size() - 1] == '\r'){
+					line.erase(line.size() - 1);
+				}
                 t_seq_L += line;
-                t_seq_L+=')'; //adding the sing for end of the line (we used the right bracket as the end of the line)
+                t_seq_L +=')'; //adding the sing for end of the line (we used the right bracket as the end of the line)
                 t_seq_len.push_back(line.length());
             }
 
@@ -445,6 +448,8 @@ int main(int argc, char *argv[])
 
 	target_preprocess(tar_file);
 	refrence_preprocess(ref_file);
+
+	cout << t_seq_L1 << endl;
 		
 	// Written by Marko Marfat
 	struct  timeval  start;
