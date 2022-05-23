@@ -35,7 +35,7 @@ g++ de_hirgc.cpp -o de_hirgc -O3
 
 ```
 ./hirgc -r reference.fa -t target.fa
-./de_hirgc -r reference.fa -t target.7z
+./de_hirgc -r reference.fa -t output.7z
 ```
 
 <pre>
