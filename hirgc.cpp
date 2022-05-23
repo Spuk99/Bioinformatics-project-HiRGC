@@ -253,7 +253,7 @@ void saveDataToFile(ofstream &myfile){
     myfile << endl;
     int j=0;
     int k=0;
-    //write lengths of intervals of other letters and the interval to file
+    //write positions of first letter in intervals of other letters and the interval to file
     for(int i=0; i<t_oth_pos.size();i++){
         myfile << t_oth_pos[i] << "-";
         for(; j<t_oth_len[i]+k;){
