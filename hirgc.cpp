@@ -238,8 +238,7 @@ void saveDataToFile(ofstream &myfile){
     for(int i=0; i<t_low_pos.size();i++){
         int sub =t_low_pos[i]-sum;
         myfile << sub << " " << t_low_len[i] << " ";
-        sum +=sub+t_low_len[i];
-        cout << i << " " << sub << " " << sum << endl; 
+        sum +=sub+t_low_len[i]; 
 
     }
     myfile << endl;
